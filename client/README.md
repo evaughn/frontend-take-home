@@ -1,3 +1,16 @@
+# Assumptions
+- user data and role data need to be loaded at the same time
+- user data is dependent on role data
+  - role id
+- data load:
+  - preload role data
+  - load user data
+  - display user data
+- search:
+  - should filter available data in state (users or roles)
+  - pagination
+    - should rely on next and prev values
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

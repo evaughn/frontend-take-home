@@ -1,19 +1,28 @@
+import { Theme } from '@radix-ui/themes';
+import "@radix-ui/themes/styles.css";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import { Theme } from '@radix-ui/themes';
 import UserManagementExercise from './components/UserManagementExercise';
 import reportWebVitals from './reportWebVitals';
+import "./styles.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const queryClient = new QueryClient();
+
 root.render(
   <React.StrictMode>
-    <Theme>
-      <UserManagementExercise />
+    <Theme accentColor="violet"
+      grayColor="slate"
+      panelBackground="solid"
+      scaling="100%"    >
+      <QueryClientProvider client={queryClient}>
+        <UserManagementExercise />
+      </QueryClientProvider>
     </Theme>
-    
   </React.StrictMode>
 );
 
