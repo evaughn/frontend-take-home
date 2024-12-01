@@ -7,9 +7,10 @@ import RoleContent from '../ManagementTabContent/RoleContent';
 const UserManagementExercise: React.FC<any> = () => {
   const [userPageIndex, setUserPageIndex] = useState(1);
   const [rolesPageIndex, setRolesPageIndex] = useState(1);
+  const [usersSearch, setUsersSearch] = useState('');
 
   const { isFetching: rolesFetchInProgress, isSuccess: rolesFetchSuccess, isError: rolesFetchError, data: rolesData } = useFetchQuery({ key: 'roles', page: rolesPageIndex });
-  const { isFetching: usersFetchInProgress, isSuccess: usersFetchSuccess, isError: usersFetchError, data: usersData } = useFetchQuery({ key: 'users', page: userPageIndex });
+  const { isFetching: usersFetchInProgress, isSuccess: usersFetchSuccess, isError: usersFetchError, data: usersData } = useFetchQuery({ key: 'users', page: userPageIndex, search: usersSearch });
 
   const isLoading = rolesFetchInProgress || usersFetchInProgress;
   const isSuccess = rolesFetchSuccess && usersFetchSuccess;
@@ -45,7 +46,7 @@ const UserManagementExercise: React.FC<any> = () => {
               {isSuccess && (
                 <>
                   <Tabs.Content value="users">
-                    <UserContent data={usersData} currentPageIndex={userPageIndex} updatePageIndex={setUserPageIndex} />
+                    <UserContent data={usersData} currentPageIndex={userPageIndex} updatePageIndex={setUserPageIndex} setSearch={setUsersSearch} roles={rolesData.data} />
                   </Tabs.Content>
 
                   <Tabs.Content value="roles">

@@ -8,7 +8,7 @@ import {
   Section, Table, TextField
 } from '@radix-ui/themes';
 import { useCallback, useState } from 'react';
-import { PagedData, User } from '../../models';
+import { PagedData, Role, User } from '../../models';
 import { formatDate } from '../../utils';
 import DeleteUserDialog, { type DeleteUserDialogProps } from '../DeleteUserDialog/DeleteUserDialog';
 
@@ -16,11 +16,15 @@ type UserContentProps = {
   data: PagedData<User>;
   currentPageIndex: number;
   updatePageIndex: (page: number) => void;
+  setSearch: (search: string) => void;
+  roles: Role[];
 }
 
-const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updatePageIndex }) => {
+const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updatePageIndex, setSearch, roles }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<DeleteUserDialogProps['user'] | null>(null);
+
+  console.log(roles)
 
   const onDeleteMenuItemClick = useCallback((user: User) => {
     const { id, first, last } = user;
@@ -32,14 +36,14 @@ const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updat
     <Section size="1">
       <Flex gap="3">
         <Box pb="20px" flexGrow="1">
-          <TextField.Root placeholder="Search users">
+          <TextField.Root placeholder="Search users" onChange={(e) => setSearch(e.target.value)}>
             <TextField.Slot>
               <MagnifyingGlassIcon height="16" width="16" />
             </TextField.Slot>
           </TextField.Root>
 
         </Box>
-        <Button>
+        <Button disabled>
           <PlusIcon /> Add user
         </Button>
       </Flex>
@@ -70,7 +74,7 @@ const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updat
                 <Table.RowHeaderCell>
                   <Avatar size="1" radius="full" src={user?.photo} fallback={user.first.charAt(0) + user.last.charAt(0)} /> {user.first} {user.last}
                 </Table.RowHeaderCell>
-                <Table.Cell>role.id</Table.Cell>
+                <Table.Cell>{roles.find((role) => role.id === user.roleId)?.name}</Table.Cell>
                 <Table.Cell>{formatDate(new Date(user.createdAt))}</Table.Cell>
                 <Table.Cell justify="end">
                   <DropdownMenu.Root>
@@ -81,8 +85,8 @@ const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updat
 
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
-                      <DropdownMenu.Item shortcut="⌘ E">Edit user</DropdownMenu.Item>
-                      <DropdownMenu.Item shortcut="⌘ D" onClick={() => onDeleteMenuItemClick(user)}>Delete User</DropdownMenu.Item>
+                      <DropdownMenu.Item disabled>Edit user</DropdownMenu.Item>
+                      <DropdownMenu.Item onClick={() => onDeleteMenuItemClick(user)}>Delete user</DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
                 </Table.Cell>

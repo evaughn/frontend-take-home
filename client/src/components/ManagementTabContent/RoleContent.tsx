@@ -37,7 +37,7 @@ const RoleContent: React.FC<RoleContentProps> = ({ data, currentPageIndex, updat
           </TextField.Root>
 
         </Box>
-        <Button>
+        <Button disabled>
           <PlusIcon /> Add role
         </Button>
       </Flex>
@@ -74,8 +74,8 @@ const RoleContent: React.FC<RoleContentProps> = ({ data, currentPageIndex, updat
 
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
-                      <DropdownMenu.Item shortcut="⌘ E" onClick={() => onEditMenuItemClick(role)}>Edit role</DropdownMenu.Item>
-                      <DropdownMenu.Item shortcut="⌘ D">Delete User</DropdownMenu.Item>
+                      <DropdownMenu.Item onClick={() => onEditMenuItemClick(role)}>Edit role</DropdownMenu.Item>
+                      <DropdownMenu.Item disabled>Delete role</DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
                 </Table.Cell>
