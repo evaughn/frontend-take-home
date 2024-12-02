@@ -9,8 +9,8 @@ type NotificationToastProps = {
 
 const NotificationToast: React.FC<NotificationToastProps> = ({ content, type }) => {
   return (
-    <Toast.Root type="foreground" className={`Toast ${type}`} duration={3000}>
-      <Toast.Description>{content}</Toast.Description>
+    <Toast.Root type="foreground" className={`ToastRoot ${type}`} duration={3000}>
+      <Toast.Description className="ToastDescription">{content}</Toast.Description>
     </Toast.Root>
   );
 };
@@ -18,39 +18,52 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ content, type }) 
 NotificationToast.displayName = "NotificationToast";
 
 class NotificationToastManager {
-  public toasts: React.ReactElement<typeof NotificationToast>[];
+  private _toasts: React.ReactElement<typeof NotificationToast>[];
+  public addEvent: string;
 
   constructor() {
-    this.toasts = [];
+    this._toasts = [];
+    this.addEvent = 'toast:add';
   }
 
-  public notify(newToastProps: NotificationToastProps) {
+  get toasts(): typeof this._toasts {
+    return this._toasts;
+  }
+
+  private dispatch = (eventName: string) => {
+    window && window.dispatchEvent(new Event(eventName));
+  }
+
+  public notify = (newToastProps: NotificationToastProps): void => {
     this.toasts.push(<NotificationToast {...newToastProps} />);
+    this.dispatch(this.addEvent);
   }
 }
 
 const notificationToastManager = new NotificationToastManager();
 
-const Wrapper: React.FC = () => {
-  const manager = notificationToastManager;
+const Wrapper: React.FC<{ manager?: NotificationToastManager }> = ({ manager = notificationToastManager }) => {
   const [notificationToasts, setNotificationsToasts] = useState(manager.toasts);
+  console.log(manager)
 
   useEffect(() => {
-    console.log('toast added')
-    setNotificationsToasts(manager.toasts);
-  }, [manager.toasts])
+    const updateToasts = () => setNotificationsToasts(manager.toasts);
+    window.addEventListener(manager.addEvent, updateToasts)
+    return () => {
+      window.removeEventListener(manager.addEvent, updateToasts)
+    }
+  }, [manager]);
 
   return (
-    <>{notificationToasts.map((toast) => toast)}</>
+    <>{notificationToasts.map((Toast) => Toast)}</>
   )
 }
 
 const ToastNotificationManager = {
   Provider: Toast.Provider,
   Viewport: Toast.Viewport,
-  Main: Wrapper
+  Main: Wrapper,
 }
 
-export const notify = notificationToastManager.notify;
-
 export default ToastNotificationManager;
+export const { notify } = notificationToastManager;

@@ -1,6 +1,5 @@
 import { DotsHorizontalIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons';
-import
-{
+import {
   Box,
   Button,
   DropdownMenu,
@@ -19,8 +18,7 @@ type ManagementTabContentProps = {
   setSearch: (search: string) => void;
 }
 
-const ManagementTabContent: React.FC<{ children: React.ReactNode }> = ({ children }) =>
-{
+const ManagementTabContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Section size="1">
       {children}
@@ -30,14 +28,12 @@ const ManagementTabContent: React.FC<{ children: React.ReactNode }> = ({ childre
 
 ManagementTabContent.displayName = 'ManagementTabContent.Root';
 
-interface ILayoutData<T>
-{
+interface ILayoutData<T> {
   columnTitle: string;
   rowDisplay: (rowData: T) => React.ReactNode;
 }
 
-interface IManagementTabTable<T>
-{
+interface IManagementTabTable<T> {
   tableData: PagedData<T>
   tableLayout: ILayoutData<T>[]
   updatePageIndex: (currentPage: number) => void;
@@ -51,8 +47,7 @@ interface IManagementTabTable<T>
 
 }
 
-const ManagementTabTable = <T,>({ tableData, tableLayout, updatePageIndex, currentPageIndex, moreMenu, isRefetching }: IManagementTabTable<T>) =>
-{
+const ManagementTabTable = <T,>({ tableData, tableLayout, updatePageIndex, currentPageIndex, moreMenu, isRefetching }: IManagementTabTable<T>) => {
   const columnHeaders = tableLayout.map((layout) => layout.columnTitle);
   const rowDisplay = tableLayout.map((layout) => layout.rowDisplay);
 
@@ -65,7 +60,7 @@ const ManagementTabTable = <T,>({ tableData, tableLayout, updatePageIndex, curre
           <Table.Header>
             <Table.Row>
               {columnHeaders.map((headerTitle: string) => (
-                <Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell key={headerTitle}>
                   {headerTitle}
                 </Table.ColumnHeaderCell>
               ))}
@@ -76,13 +71,12 @@ const ManagementTabTable = <T,>({ tableData, tableLayout, updatePageIndex, curre
           </Table.Header>
 
           <Table.Body>
-            {tableData.data.map((tableEntry: T) => (
-              <Table.Row>
-                {rowDisplay.map((entryForColumn, index) =>
-                {
+            {tableData.data.map((tableEntry: T, entryIndex) => (
+              <Table.Row key={`tableEntry-${entryIndex}`}>
+                {rowDisplay.map((entryForColumn, index) => {
                   const RowCell = index === 0 ? Table.RowHeaderCell : Table.Cell;
                   return (
-                    <RowCell>
+                    <RowCell key={`rowDisplay-entry-${entryIndex}:${index}`}>
                       {entryForColumn(tableEntry)}
                     </RowCell>
                   )
@@ -98,7 +92,7 @@ const ManagementTabTable = <T,>({ tableData, tableLayout, updatePageIndex, curre
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
                       {moreMenu.map(({ disabled, text, onClick }) => (
-                        <DropdownMenu.Item disabled={disabled} onClick={() => onClick?.(tableEntry)}>{text}</DropdownMenu.Item>
+                        <DropdownMenu.Item key={text} disabled={disabled} onClick={() => onClick?.(tableEntry)}>{text}</DropdownMenu.Item>
                       ))}
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
@@ -136,10 +130,8 @@ type ManagementSearchBarProps = {
   }
 }
 
-const ManagementSearchBar: React.FC<ManagementSearchBarProps> = ({ setSearch, placeholder, createAction }) =>
-{
-  const onSearchInput = ((e: ChangeEvent<HTMLInputElement>) =>
-  {
+const ManagementSearchBar: React.FC<ManagementSearchBarProps> = ({ setSearch, placeholder, createAction }) => {
+  const onSearchInput = ((e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const value = DOMPurify.sanitize(e.target.value);
     setSearch(value);
@@ -164,15 +156,14 @@ const ManagementSearchBar: React.FC<ManagementSearchBarProps> = ({ setSearch, pl
 
 ManagementSearchBar.displayName = 'ManagementTabContent.Searchbar';
 
-export
-{
+export {
   ManagementTabContent as Root,
   ManagementSearchBar as SearchBar,
   ManagementTabTable as Table
 };
 
-export type {
-  IManagementTabTable as ITableProps, ManagementTabContentProps as RootProps,
-  ManagementSearchBarProps as SearchBarProps
-};
+  export type {
+    IManagementTabTable as ITableProps, ManagementTabContentProps as RootProps,
+    ManagementSearchBarProps as SearchBarProps
+  };
 

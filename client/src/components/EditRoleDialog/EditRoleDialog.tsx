@@ -3,7 +3,7 @@ import { Button, Checkbox, Dialog, Flex, Text, TextField } from "@radix-ui/theme
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { usePatchMutation } from "../../hooks/useManagementMutations";
 import { Role } from "../../models";
-
+import { notify } from "../ToastNotificationManager/ToastNotificationManager";
 
 export type EditRoleDialogProps = {
 	role: Pick<Role, 'id' | 'name' | 'isDefault'>;
@@ -17,10 +17,12 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 		key: 'roles',
 		id: roleId,
 		onSuccess: () => {
-
+			notify({ type: 'success', content: `Sucessfully updated role` })
 			onOpenChange(false);
 		},
-		onError: () => {
+		onError: (error: Error) => {
+			console.log(error)
+			notify({ type: 'error', content: `Unexpected` })
 			console.log('Unexpected error')
 		}
 	});

@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { notify } from "../components/ToastNotificationManager/ToastNotificationManager";
 import type { Role, User } from "../models";
 
 type UseManagementMutationProps = {
   key: string;
   id: string;
   onSuccess?: () => void;
-  onError?: () => void;
+  onError?: (error: Error) => void;
 }
 
 const usePatchMutation = ({
@@ -18,8 +17,8 @@ const usePatchMutation = ({
   const queryClient = useQueryClient();
 
   const mutationResult = useMutation({
-    mutationFn: async (updatedEntry: Partial<User> | Partial<Role>) => {
-      return await fetch(`http://localhost:3002/${key}/${id}`, {
+    mutationFn: (updatedEntry: Partial<User> | Partial<Role>) => {
+      return fetch(`http://localhost:3002/${key}/${id}`, {
         method: 'PATCH',
         headers: {
           'content-type': 'application/json',
@@ -27,15 +26,13 @@ const usePatchMutation = ({
         body: JSON.stringify(updatedEntry),
       });
     },
-    onSuccess: async (data) => {
-      notify({ type: 'success', content: `Sucessfully updated ${key}` })
+    onSuccess: (data) => {
       queryClient.setQueryData([key, id], data);
       queryClient.invalidateQueries({ queryKey: [key] });
       onSuccess?.();
     },
-    onError: () => {
-      notify({ type: 'error', content: `Something went wrong` })
-      onError?.();
+    onError: (error: Error) => {
+      onError?.(error);
     }
   })
 
@@ -51,20 +48,20 @@ const useDeleteMutation = ({
   const queryClient = useQueryClient();
 
   const mutationResult = useMutation({
-    mutationFn: async (newMutation) => {
-      return await fetch(`http://localhost:3002/${key}/${id}`, {
+    mutationFn: (newMutation) => {
+      return fetch(`http://localhost:3002/${key}/${id}`, {
         method: 'DELETE',
         headers: {
           'content-type': 'application/json',
         },
       });
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [key] })
       onSuccess?.();
     },
-    onError: async () => {
-      onError?.();
+    onError: (error: Error) => {
+      onError?.(error);
     }
   })
 

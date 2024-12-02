@@ -3,7 +3,6 @@ import "@radix-ui/themes/styles.css";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import AppToastNotifications from './components/ToastNotificationManager/ToastNotificationManager';
 import UserManagementExercise from './components/UserManagementExercise';
 import reportWebVitals from './reportWebVitals';
 import "./styles.css";
@@ -21,11 +20,7 @@ root.render(
       panelBackground="solid"
       scaling="100%"    >
       <QueryClientProvider client={queryClient}>
-        <AppToastNotifications.Provider>
-          <UserManagementExercise />
-          <AppToastNotifications.Main />
-          <AppToastNotifications.Viewport />
-        </AppToastNotifications.Provider>
+        <UserManagementExercise />
       </QueryClientProvider>
     </Theme>
   </React.StrictMode>
