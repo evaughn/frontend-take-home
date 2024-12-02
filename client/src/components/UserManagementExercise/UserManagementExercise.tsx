@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Skeleton, Table, Tabs } from '@radix-ui/themes';
+import { Box, Container, Flex, Tabs } from '@radix-ui/themes';
 import { useState } from 'react';
 import useFetchQuery from '../../hooks/useFetchQuery';
 import { UserContent } from '../ManagementTabContent';
@@ -9,8 +9,8 @@ const UserManagementExercise: React.FC<any> = () => {
   const [rolesPageIndex, setRolesPageIndex] = useState(1);
   const [usersSearch, setUsersSearch] = useState('');
 
-  const { isFetching: rolesFetchInProgress, isSuccess: rolesFetchSuccess, isError: rolesFetchError, data: rolesData } = useFetchQuery({ key: 'roles', page: rolesPageIndex });
-  const { isFetching: usersFetchInProgress, isSuccess: usersFetchSuccess, isError: usersFetchError, data: usersData } = useFetchQuery({ key: 'users', page: userPageIndex, search: usersSearch });
+  const { isFetching: rolesFetchInProgress, isSuccess: rolesFetchSuccess, isError: rolesFetchError, data: rolesData, isRefetching: rolesIsRefetching } = useFetchQuery({ key: 'roles', page: rolesPageIndex });
+  const { isFetching: usersFetchInProgress, isSuccess: usersFetchSuccess, isError: usersFetchError, data: usersData, isRefetching: usersIsRefetching } = useFetchQuery({ key: 'users', page: userPageIndex, search: usersSearch });
 
   const isLoading = rolesFetchInProgress || usersFetchInProgress;
   const isSuccess = rolesFetchSuccess && usersFetchSuccess;
@@ -27,30 +27,14 @@ const UserManagementExercise: React.FC<any> = () => {
             </Tabs.List>
 
             <Box pt="1">
-              {isLoading && <Skeleton><Table.Header>
-                <Table.Row>
-                  <Table.ColumnHeaderCell>
-                    User
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>
-                    Role
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>
-                    Joined
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>
-
-                  </Table.ColumnHeaderCell>
-                </Table.Row>
-              </Table.Header></Skeleton>}
               {isSuccess && (
                 <>
                   <Tabs.Content value="users">
-                    <UserContent data={usersData} currentPageIndex={userPageIndex} updatePageIndex={setUserPageIndex} setSearch={setUsersSearch} roles={rolesData.data} />
+                    <UserContent data={usersData} currentPageIndex={userPageIndex} updatePageIndex={setUserPageIndex} setSearch={setUsersSearch} roles={rolesData.data} isRefetching={usersIsRefetching} />
                   </Tabs.Content>
 
                   <Tabs.Content value="roles">
-                    <RoleContent data={rolesData} currentPageIndex={rolesPageIndex} updatePageIndex={setRolesPageIndex} />
+                    <RoleContent data={rolesData} currentPageIndex={rolesPageIndex} updatePageIndex={setRolesPageIndex} isRefetching={rolesIsRefetching} />
                   </Tabs.Content>
                 </>
 

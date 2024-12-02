@@ -1,20 +1,23 @@
 import { UpdateIcon } from "@radix-ui/react-icons";
-import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
+import { Button, Checkbox, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { usePatchMutation } from "../../hooks/useManagementMutations";
 import { Role } from "../../models";
 
+
 export type EditRoleDialogProps = {
-	role: Pick<Role, 'id' | 'name'>;
+	role: Pick<Role, 'id' | 'name' | 'isDefault'>;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
 
 const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChange }) => {
+	const { id: roleId, isDefault, name } = role;
 	const renameRole = usePatchMutation({
 		key: 'roles',
-		id: role.id,
+		id: roleId,
 		onSuccess: () => {
+
 			onOpenChange(false);
 		},
 		onError: () => {
@@ -22,15 +25,16 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 		}
 	});
 
-	const [updatedName, setUpdatedName] = useState<string>(role.name);
+	const [updatedName, setUpdatedName] = useState<string>(name);
+	const [isDefaultRole, setDefaultRole] = useState<boolean>(isDefault)
 
 	const onFormSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		renameRole.mutate({name: updatedName, updatedAt: new Date().toISOString() });
-	}, [renameRole, updatedName])
+		renameRole.mutate({ name: updatedName, isDefault: isDefaultRole });
+	}, [renameRole, updatedName, roleId])
 
-  return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange} >
+	return (
+		<Dialog.Root open={open} onOpenChange={onOpenChange} >
 			<Dialog.Content maxWidth="450px">
 				<Dialog.Title>Rename {role.name} role</Dialog.Title>
 				<Dialog.Description size="2" mb="4">
@@ -39,10 +43,16 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 
 				<form onSubmit={onFormSubmit}>
 					<TextField.Root placeholder={role.name} name="updatedRoleName" onChange={(e: ChangeEvent<HTMLInputElement>) => setUpdatedName(e.target.value)}>
-            <TextField.Slot>
-              <UpdateIcon />
-            </TextField.Slot>
-          </TextField.Root>
+						<TextField.Slot>
+							<UpdateIcon />
+						</TextField.Slot>
+					</TextField.Root>
+					<Text as="label" size="2">
+						<Flex gap="2" justify={"end"}>
+							<Checkbox checked={isDefaultRole} onCheckedChange={() => setDefaultRole(!isDefaultRole)} />
+							Default role
+						</Flex>
+					</Text>
 					<Flex gap="3" mt="4" justify="end">
 						<Dialog.Close>
 							<Button variant="soft" color="gray" type="button" onClick={() => onOpenChange(false)}>
@@ -55,11 +65,11 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 					</Flex>
 				</form>
 
-				
-				
+
+
 			</Dialog.Content>
 		</Dialog.Root>
-  )
+	)
 }
 
 export default EditRoleDialog;

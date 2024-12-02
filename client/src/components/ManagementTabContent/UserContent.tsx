@@ -1,16 +1,11 @@
-import { DotsHorizontalIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons';
 import {
-  Avatar,
-  Box,
-  Button,
-  DropdownMenu,
-  Flex,
-  Section, Table, TextField
+  Avatar, Text
 } from '@radix-ui/themes';
 import { useCallback, useState } from 'react';
 import { PagedData, Role, User } from '../../models';
 import { formatDate } from '../../utils';
 import DeleteUserDialog, { type DeleteUserDialogProps } from '../DeleteUserDialog/DeleteUserDialog';
+import * as ManagementTableContent from "../ManagementTabContent/ManagementTabContentBase";
 
 type UserContentProps = {
   data: PagedData<User>;
@@ -18,13 +13,12 @@ type UserContentProps = {
   updatePageIndex: (page: number) => void;
   setSearch: (search: string) => void;
   roles: Role[];
+  isRefetching: boolean;
 }
 
-const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updatePageIndex, setSearch, roles }) => {
+const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updatePageIndex, setSearch, roles, isRefetching }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<DeleteUserDialogProps['user'] | null>(null);
-
-  console.log(roles)
 
   const onDeleteMenuItemClick = useCallback((user: User) => {
     const { id, first, last } = user;
@@ -33,85 +27,39 @@ const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updat
   }, []);
 
   return (
-    <Section size="1">
-      <Flex gap="3">
-        <Box pb="20px" flexGrow="1">
-          <TextField.Root placeholder="Search users" onChange={(e) => setSearch(e.target.value)}>
-            <TextField.Slot>
-              <MagnifyingGlassIcon height="16" width="16" />
-            </TextField.Slot>
-          </TextField.Root>
+    <ManagementTableContent.Root>
+      <ManagementTableContent.SearchBar setSearch={setSearch} placeholder='Search users' createAction={{ text: 'Add user', disabled: true }} />
+      <ManagementTableContent.Table<User>
+        tableData={data}
+        isRefetching={isRefetching}
+        currentPageIndex={currentPageIndex}
+        updatePageIndex={updatePageIndex}
+        tableLayout={[
+          {
+            columnTitle: 'User',
+            rowDisplay: (user: User) => (
+              <Text>
+                <Avatar
+                  size="1"
+                  radius="full"
+                  src={user?.photo}
+                  fallback={user.first.charAt(0) + user.last.charAt(0)}
+                /> {user.first} {user.last}
+              </Text>)
 
-        </Box>
-        <Button disabled>
-          <PlusIcon /> Add user
-        </Button>
-      </Flex>
 
-
-      <Box>
-        <Table.Root variant="surface" size="1">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeaderCell>
-                User
-              </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>
-                Role
-              </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>
-                Joined
-              </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>
-
-              </Table.ColumnHeaderCell>
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
-            {data.data.map((user: User) => (
-              <Table.Row>
-                <Table.RowHeaderCell>
-                  <Avatar size="1" radius="full" src={user?.photo} fallback={user.first.charAt(0) + user.last.charAt(0)} /> {user.first} {user.last}
-                </Table.RowHeaderCell>
-                <Table.Cell>{roles.find((role) => role.id === user.roleId)?.name}</Table.Cell>
-                <Table.Cell>{formatDate(new Date(user.createdAt))}</Table.Cell>
-                <Table.Cell justify="end">
-                  <DropdownMenu.Root>
-                    <DropdownMenu.Trigger>
-                      <Button variant="ghost" style={{ verticalAlign: "middle" }}>
-                        <DotsHorizontalIcon />
-                      </Button>
-
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                      <DropdownMenu.Item disabled>Edit user</DropdownMenu.Item>
-                      <DropdownMenu.Item onClick={() => onDeleteMenuItemClick(user)}>Delete user</DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Root>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-
-            {data.pages >= 2 && (
-              <Table.Row align="end">
-                <Table.Cell justify="end">
-                  <Flex gap="2" justify="end">
-                    <Button size="1" disabled={data.prev == null} onClick={() => updatePageIndex(currentPageIndex - 1)}>Previous</Button>
-                    <Button size="1" disabled={data.next == null} onClick={() => updatePageIndex(currentPageIndex + 1)}>Next</Button>
-                  </Flex>
-
-                </Table.Cell>
-              </Table.Row>
-            )}
-
-          </Table.Body>
-        </Table.Root>
-      </Box>
-
+          },
+          {
+            columnTitle: 'Role', rowDisplay: (user: User) => <Text>
+              {roles.find((role: Role) => role.id === user.roleId)?.name}
+            </Text>
+          },
+          { columnTitle: 'Joined', rowDisplay: (user: User) => formatDate(new Date(user.createdAt)) }
+        ]}
+        moreMenu={[{ text: 'Edit user', disabled: true }, { text: 'Delete user', disabled: false, onClick: onDeleteMenuItemClick }]}
+      />
       {selectedUser && <DeleteUserDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={selectedUser} />}
-
-    </Section>
+    </ManagementTableContent.Root>
   );
 }
 

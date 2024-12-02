@@ -1,14 +1,15 @@
-import { Button, Dialog, Flex } from "@radix-ui/themes";
+import { Button, Dialog, Flex, Strong } from "@radix-ui/themes";
 import { useDeleteMutation } from "../../hooks/useManagementMutations";
 import { User } from "../../models";
+import { notify } from "../ToastNotificationManager/ToastNotificationManager";
 
 export type DeleteUserDialogProps = {
-	user: Pick<User, 'first' | 'last'| 'id'>;
+	user: Pick<User, 'first' | 'last' | 'id'>;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
 
-const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenChange,  }) => {
+const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenChange, }) => {
 	const deleteUser = useDeleteMutation({
 		key: 'users',
 		id: user.id,
@@ -16,16 +17,16 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenC
 			onOpenChange(false);
 		},
 		onError: () => {
-			console.log('Unexpected error')
+			notify({ type: 'error', content: 'Something went wrong' });
 		}
 	});
 
-  return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange} >
+	return (
+		<Dialog.Root open={open} onOpenChange={onOpenChange} >
 			<Dialog.Content maxWidth="450px">
 				<Dialog.Title>Delete User</Dialog.Title>
 				<Dialog.Description size="2" mb="4">
-					Are you sure? The user {user.first} {user.last} will be permanently deleted.
+					Are you sure? The user <Strong>{user.first} {user.last} </Strong> will be permanently deleted.
 				</Dialog.Description>
 
 				<Flex gap="3" mt="4" justify="end">
@@ -40,7 +41,7 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenC
 				</Flex>
 			</Dialog.Content>
 		</Dialog.Root>
-  )
+	)
 }
 
 export default DeleteUserDialog;

@@ -25,7 +25,7 @@ const useFetchQuery = ({key, page, search}: FetchQueryParams) => {
 
       return await response.json();
     },
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
   });
 
   return dataFetch;
