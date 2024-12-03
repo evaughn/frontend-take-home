@@ -1,6 +1,6 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Box, Button, Container, Flex, Heading, Spinner, Tabs, Text } from '@radix-ui/themes';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useFetchQuery from '../../hooks/useFetchQuery';
 import { UserContent } from '../ManagementTabContent';
 import RoleContent from '../ManagementTabContent/RoleContent';
@@ -10,6 +10,7 @@ const UserManagementExercise: React.FC<any> = () => {
   const [userPageIndex, setUserPageIndex] = useState(1);
   const [rolesPageIndex, setRolesPageIndex] = useState(1);
   const [usersSearch, setUsersSearch] = useState('');
+  const [isOnline, setIsOnline] = useState(window.navigator.onLine);
 
   const { isPending: rolesFetchInProgress, isSuccess: rolesFetchSuccess, isError: rolesFetchError, data: rolesData, isRefetching: rolesIsRefetching, isStale: rolesFetchStale } = useFetchQuery({ key: 'roles', page: rolesPageIndex });
   const { isPending: usersFetchInProgress, isSuccess: usersFetchSuccess, isError: usersFetchError, data: usersData, isRefetching: usersIsRefetching, isStale: usersFetchStale } = useFetchQuery({ key: 'users', page: userPageIndex, search: usersSearch });
@@ -17,6 +18,16 @@ const UserManagementExercise: React.FC<any> = () => {
   const isLoading = rolesFetchInProgress || usersFetchInProgress;
   const isSuccess = rolesFetchSuccess && usersFetchSuccess;
   const isLoadingError = usersFetchError || rolesFetchError;
+
+  useEffect(() => {
+    window.addEventListener('online', () => setIsOnline(true))
+    window.addEventListener('offline', () => setIsOnline(false))
+
+    return () => {
+      window.removeEventListener('online', () => setIsOnline(true))
+      window.removeEventListener('offline', () => setIsOnline(false))
+    }
+  }, [])
 
   const VerticalCenterFallback: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
@@ -32,28 +43,42 @@ const UserManagementExercise: React.FC<any> = () => {
 
   return (
     <DefaultToastNotificationManager>
-      {isLoading && (
+      {!isOnline && (
         <VerticalCenterFallback>
-          <Spinner size="2" />
-          <Text size="3" color='indigo'>Loading</Text>
+          <Box style={{ textAlign: 'center' }}>
+            <Heading as="h1" size='5'>Offline!</Heading>
+            <Text size="3">Connect to a network to load management exercise</Text>
+          </Box>
         </VerticalCenterFallback>
       )}
 
-      {isLoadingError && (
-        <VerticalCenterFallback>
-          <Flex direction='column' gap='2' align={'center'}>
-            <Box style={{ textAlign: 'center' }}>
-              <Heading as="h1" size='5'>Error!</Heading>
-              <Text size="3">Something unexpected occured.</Text>
-            </Box>
+      {isOnline && (
+        <>
+          {isLoading && (
+            <VerticalCenterFallback>
+              <Spinner size="2" />
+              <Text size="3" color='indigo'>Loading</Text>
+            </VerticalCenterFallback>
+          )}
 
-            <Button onClick={() => window.location.reload()}>
-              <ReloadIcon />
-              Reload
-            </Button>
-          </Flex>
-        </VerticalCenterFallback>
+          {isLoadingError && (
+            <VerticalCenterFallback>
+              <Flex direction='column' gap='2' align={'center'}>
+                <Box style={{ textAlign: 'center' }}>
+                  <Heading as="h1" size='5'>Error!</Heading>
+                  <Text size="3">Something unexpected occured.</Text>
+                </Box>
+
+                <Button onClick={() => window.location.reload()}>
+                  <ReloadIcon />
+                  Reload
+                </Button>
+              </Flex>
+            </VerticalCenterFallback>
+          )}
+        </>
       )}
+
 
       {isSuccess && (
         <Box>

@@ -26,7 +26,8 @@ const useFetchQuery = ({ key, page, search }: FetchQueryParams) => {
       return await response.json();
     },
     placeholderData: keepPreviousData,
-    staleTime: 1000 * 60 * 60
+    staleTime: 1000 * 60 * 60,
+    enabled: window.navigator.onLine
   });
 
   return dataFetch;
