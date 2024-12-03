@@ -18,4 +18,4 @@ I wanted to create a base component that was general enough to get the core mech
 
 1. Probably cut down on the abstractions.
 2. Use more animations. I went with the core of @radix-ui/themes and @radix-ui/primitives, but could have focused more on them.
-3. Network latency and error states: I created `ToastNotificationManager` to handle app network responses, but didn;t really test around slow or offline.
+3. Network latency and error states: I created `ToastNotificationManager` to handle app network responses, but didn't really test around slow or offline. I started making a custom hook to measure elasped time, but then realized that the time I was spending on this project exceeded the time limit.
