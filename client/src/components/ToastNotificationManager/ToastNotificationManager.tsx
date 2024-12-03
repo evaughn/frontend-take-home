@@ -42,9 +42,8 @@ class NotificationToastManager {
 
 const notificationToastManager = new NotificationToastManager();
 
-const Wrapper: React.FC<{ manager?: NotificationToastManager }> = ({ manager = notificationToastManager }) => {
+const Main: React.FC<{ manager?: NotificationToastManager }> = ({ manager = notificationToastManager }) => {
   const [notificationToasts, setNotificationsToasts] = useState(manager.toasts);
-  console.log(manager)
 
   useEffect(() => {
     const updateToasts = () => setNotificationsToasts(manager.toasts);
@@ -59,11 +58,22 @@ const Wrapper: React.FC<{ manager?: NotificationToastManager }> = ({ manager = n
   )
 }
 
+export const DefaultToastNotificationManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <ToastNotificationManager.Provider>
+      {children}
+      <ToastNotificationManager.Main />
+      <ToastNotificationManager.Viewport className='ToastViewport' />
+    </ToastNotificationManager.Provider>
+  )
+}
+
 const ToastNotificationManager = {
   Provider: Toast.Provider,
   Viewport: Toast.Viewport,
-  Main: Wrapper,
+  Main: Main,
 }
+
 
 export default ToastNotificationManager;
 export const { notify } = notificationToastManager;

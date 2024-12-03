@@ -1,5 +1,5 @@
-import { UpdateIcon } from "@radix-ui/react-icons";
-import { Button, Checkbox, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
+import { BadgeIcon } from "@radix-ui/react-icons";
+import { Button, Checkbox, Dialog, Flex, Strong, Text, TextField } from "@radix-ui/themes";
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { usePatchMutation } from "../../hooks/useManagementMutations";
 import { Role } from "../../models";
@@ -21,9 +21,7 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 			onOpenChange(false);
 		},
 		onError: (error: Error) => {
-			console.log(error)
 			notify({ type: 'error', content: `Unexpected` })
-			console.log('Unexpected error')
 		}
 	});
 
@@ -33,26 +31,26 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 	const onFormSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		renameRole.mutate({ name: updatedName, isDefault: isDefaultRole });
-	}, [renameRole, updatedName, roleId])
+	}, [renameRole, updatedName, isDefaultRole])
 
 	return (
 		<Dialog.Root open={open} onOpenChange={onOpenChange} >
 			<Dialog.Content maxWidth="450px">
-				<Dialog.Title>Rename {role.name} role</Dialog.Title>
+				<Dialog.Title>Rename role</Dialog.Title>
 				<Dialog.Description size="2" mb="4">
-					Type the updated name for the {role.name} role
+					<Text>Set the updated name for the <Strong>{role.name}</Strong> role</Text>
 				</Dialog.Description>
 
 				<form onSubmit={onFormSubmit}>
 					<TextField.Root placeholder={role.name} name="updatedRoleName" onChange={(e: ChangeEvent<HTMLInputElement>) => setUpdatedName(e.target.value)}>
 						<TextField.Slot>
-							<UpdateIcon />
+							<BadgeIcon />
 						</TextField.Slot>
 					</TextField.Root>
 					<Text as="label" size="2">
-						<Flex gap="2" justify={"end"}>
+						<Flex gap="2" justify={"end"} pt='2'>
 							<Checkbox checked={isDefaultRole} onCheckedChange={() => setDefaultRole(!isDefaultRole)} />
-							Default role
+							Set default role
 						</Flex>
 					</Text>
 					<Flex gap="3" mt="4" justify="end">

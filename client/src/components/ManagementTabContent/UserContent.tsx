@@ -56,7 +56,7 @@ const UserContent: React.FC<UserContentProps> = ({ data, currentPageIndex, updat
           },
           { columnTitle: 'Joined', rowDisplay: (user: User) => formatDate(new Date(user.createdAt)) }
         ]}
-        moreMenu={[{ text: 'Edit user', disabled: true }, { text: 'Delete user', disabled: false, onClick: onDeleteMenuItemClick }]}
+        moreMenu={[{ text: 'Edit user' }, { text: 'Delete user', onClick: onDeleteMenuItemClick }]}
       />
       {selectedUser && <DeleteUserDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={selectedUser} />}
     </ManagementTableContent.Root>

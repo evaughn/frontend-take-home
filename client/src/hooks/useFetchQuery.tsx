@@ -6,7 +6,7 @@ type FetchQueryParams = {
   search?: string;
 }
 
-const useFetchQuery = ({key, page, search}: FetchQueryParams) => {
+const useFetchQuery = ({ key, page, search }: FetchQueryParams) => {
   const params = new URLSearchParams({
     page: `${page}`
   });
@@ -26,6 +26,7 @@ const useFetchQuery = ({key, page, search}: FetchQueryParams) => {
       return await response.json();
     },
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 60
   });
 
   return dataFetch;

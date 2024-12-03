@@ -14,6 +14,7 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenC
 		key: 'users',
 		id: user.id,
 		onSuccess: () => {
+			notify({ type: 'success', content: `Sucessfully deleted ${user.first} ${user.last}` })
 			onOpenChange(false);
 		},
 		onError: () => {

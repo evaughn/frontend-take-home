@@ -37,7 +37,7 @@
 
 .ToastRoot.success {
   color: white;
-  background-color: var(--green-2);
+  background-color: var(--green-1);
 }
 
 .ToastRoot.error {

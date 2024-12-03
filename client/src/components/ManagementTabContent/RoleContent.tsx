@@ -22,12 +22,19 @@ const RoleContent: React.FC<RoleContentProps> = ({ data, currentPageIndex, updat
     setIsDialogOpen(true);
   }, []);
 
+  const sortedData = data.data.sort((a) => { return a.isDefault ? -1 : 0 });
+
+  let updatedData = {
+    ...data,
+    data: sortedData
+  };
+
   return (
     <ManagementTabContent.Root>
       <ManagementTabContent.SearchBar setSearch={() => { }} placeholder='Search roles' createAction={{ text: 'Add role', disabled: true }} />
       <ManagementTabContent.Table<Role>
         isRefetching={isRefetching}
-        tableData={data}
+        tableData={updatedData}
         currentPageIndex={currentPageIndex}
         updatePageIndex={updatePageIndex}
         tableLayout={[
@@ -53,7 +60,7 @@ const RoleContent: React.FC<RoleContentProps> = ({ data, currentPageIndex, updat
               </>)
           },
         ]}
-        moreMenu={[{ text: 'Edit role', disabled: false, onClick: onEditMenuItemClick }, { text: 'Delete role', disabled: true }]}
+        moreMenu={[{ text: 'Edit role', onClick: onEditMenuItemClick }, { text: 'Delete role' }]}
       />
       {selectedRole && <EditRoleDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} role={selectedRole} />}
     </ManagementTabContent.Root>
