@@ -21,7 +21,8 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 			onOpenChange(false);
 		},
 		onError: (error: Error) => {
-			notify({ type: 'error', content: `Unexpected` })
+			notify({ type: 'error', content: error.message })
+			onOpenChange(false);
 		}
 	});
 
