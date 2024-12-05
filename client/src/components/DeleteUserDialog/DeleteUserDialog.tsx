@@ -1,7 +1,7 @@
+import { notify } from "@app/components/ToastNotificationManager/ToastNotificationManager";
+import { useDeleteMutation } from "@app/hooks/useManagementMutations";
+import { User } from "@app/models";
 import { Button, Dialog, Flex, Strong } from "@radix-ui/themes";
-import { useDeleteMutation } from "../../hooks/useManagementMutations";
-import { User } from "../../models";
-import { notify } from "../ToastNotificationManager/ToastNotificationManager";
 
 export type DeleteUserDialogProps = {
 	user: Pick<User, 'first' | 'last' | 'id'>;

@@ -18,7 +18,7 @@ const usePatchMutation = ({
 
   const mutationResult = useMutation({
     mutationFn: (updatedEntry: Partial<User> | Partial<Role>) => {
-      return fetch(`http://localhost:3002/${key}/${id}`, {
+      return fetch(`/api/${key}/${id}`, {
         method: 'PATCH',
         headers: {
           'content-type': 'application/json',
@@ -49,7 +49,7 @@ const useDeleteMutation = ({
 
   const mutationResult = useMutation({
     mutationFn: (newMutation) => {
-      return fetch(`http://localhost:3002/${key}/${id}`, {
+      return fetch(`/api/${key}/${id}`, {
         method: 'DELETE',
         headers: {
           'content-type': 'application/json',

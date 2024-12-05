@@ -18,7 +18,7 @@ const useFetchQuery = ({ key, page, search }: FetchQueryParams) => {
   const dataFetch = useQuery({
     queryKey: [key, page, search],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3002/${key}?${params}`);
+      const response = await fetch(`/api/${key}?${params}`);
       if (!response.ok) {
         throw new Error('New error');
       }
