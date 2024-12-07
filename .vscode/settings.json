@@ -4,7 +4,4 @@
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "files.autoSave": "afterDelay",
-  "editor.codeActionsOnSave": {
-    
-  }
 }

@@ -1,7 +1,7 @@
 import { BadgeIcon } from "@radix-ui/react-icons";
 import { Button, Checkbox, Dialog, Flex, Strong, Text, TextField } from "@radix-ui/themes";
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
-import { usePatchMutation } from "../../hooks/useManagementMutations";
+import useManagementMutation from "../../hooks/useManagementMutations";
 import { Role } from "../../models";
 import { notify } from "../ToastNotificationManager/ToastNotificationManager";
 
@@ -13,7 +13,7 @@ export type EditRoleDialogProps = {
 
 const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChange }) => {
 	const { id: roleId, isDefault, name } = role;
-	const renameRole = usePatchMutation({
+  const renameRole = useManagementMutation({
 		key: 'roles',
 		id: roleId,
 		onSuccess: () => {
@@ -24,7 +24,7 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ role, open, onOpenChang
 			notify({ type: 'error', content: error.message })
 			onOpenChange(false);
 		}
-	});
+  }, "PATCH");
 
 	const [updatedName, setUpdatedName] = useState<string>(name);
 	const [isDefaultRole, setDefaultRole] = useState<boolean>(isDefault)

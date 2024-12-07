@@ -1,5 +1,5 @@
+import type { Override, UseMutateFunction, UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Role, User } from "../models";
 
 type UseManagementMutationProps = {
   key: string;
@@ -8,67 +8,49 @@ type UseManagementMutationProps = {
   onError?: (error: Error) => void;
 }
 
-const usePatchMutation = ({
-  key,
-  id,
-  onSuccess,
-  onError
-}: UseManagementMutationProps) => {
-  const queryClient = useQueryClient();
+type HTTPMethods = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-  const mutationResult = useMutation({
-    mutationFn: (updatedEntry: Partial<User> | Partial<Role>) => {
-      return fetch(`/api/${key}/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(updatedEntry),
-      });
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData([key, id], data);
-      queryClient.invalidateQueries({ queryKey: [key] });
-      onSuccess?.();
-    },
-    onError: (error: Error) => {
-      onError?.(error);
-    }
-  })
+type UseManagementMutate = UseMutateFunction & (() => void);
 
-  return mutationResult;
-}
-
-const useDeleteMutation = ({
-  key,
-  id,
-  onSuccess,
-  onError
-}: UseManagementMutationProps) => {
-  const queryClient = useQueryClient();
-
-  const mutationResult = useMutation({
-    mutationFn: (newMutation) => {
-      return fetch(`/api/${key}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [key] })
-      onSuccess?.();
-    },
-    onError: (error: Error) => {
-      onError?.(error);
-    }
-  })
-
-  return mutationResult;
-}
-
-export {
-  useDeleteMutation,
-  usePatchMutation
+type UseManagementMutationResult = UseMutationResult & {
+  mutate: UseManagementMutate
 };
+
+const useManagementMutation = (props: UseManagementMutationProps, method: HTTPMethods) => {
+  const { key, id, onSuccess, onError } = props;
+  const queryClient = useQueryClient();
+  const isDeleteMethod = method === 'DELETE';
+
+
+
+  const mutationResult: UseManagementMutationResult = useMutation({
+    mutationFn: (args) => {
+      return fetch(`/api/${key}/${id}`, {
+        method,
+        headers: {
+          'content-type': 'application/json',
+        },
+        ...(!isDeleteMethod && {
+          body: JSON.stringify(args),
+        })
+      });
+    },
+    onSuccess: async (data) => {
+      if (!isDeleteMethod) {
+        await queryClient.setQueryData([key, id], data);
+      }
+
+      await queryClient.invalidateQueries({ queryKey: [key] });
+      onSuccess?.();
+
+    },
+    onError: async (error: Error) => {
+      onError?.(error);
+    }
+  });
+
+
+  return mutationResult;
+}
+
+export default useManagementMutation;

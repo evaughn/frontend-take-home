@@ -1,5 +1,5 @@
 import { notify } from "@app/components/ToastNotificationManager/ToastNotificationManager";
-import { useDeleteMutation } from "@app/hooks/useManagementMutations";
+import useManagementMutation from "@app/hooks/useManagementMutations";
 import { User } from "@app/models";
 import { Button, Dialog, Flex, Strong } from "@radix-ui/themes";
 
@@ -10,7 +10,7 @@ export type DeleteUserDialogProps = {
 }
 
 const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenChange, }) => {
-	const deleteUser = useDeleteMutation({
+	const deleteUser = useManagementMutation({
 		key: 'users',
 		id: user.id,
 		onSuccess: () => {
@@ -21,7 +21,7 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ user, open, onOpenC
 			notify({ type: 'error', content: error.message });
 			onOpenChange(false);
 		}
-	});
+	}, 'DELETE');
 
 	return (
 		<Dialog.Root open={open} onOpenChange={onOpenChange} >
