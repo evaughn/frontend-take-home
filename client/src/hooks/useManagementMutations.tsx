@@ -1,7 +1,7 @@
-import type { Override, UseMutateFunction, UseMutationResult } from "@tanstack/react-query";
+import type { MutationObserverBaseResult, Override, UseMutateFunction } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-type UseManagementMutationProps = {
+type UseManagementMutationHookProps = {
   key: string;
   id: string;
   onSuccess?: () => void;
@@ -10,20 +10,17 @@ type UseManagementMutationProps = {
 
 type HTTPMethods = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-type UseManagementMutate = UseMutateFunction & (() => void);
+type UseManagemenMutationHookResult = Override<MutationObserverBaseResult<Response, Error, void, unknown>, { mutate: Partial<UseMutateFunction<Response, Error, unknown, unknown>> }> ;
 
-type UseManagementMutationResult = UseMutationResult & {
-  mutate: UseManagementMutate
-};
+type UseManagementMutationHookMethod = <T extends UseManagementMutationHookProps, S extends HTTPMethods>(props: T, method: S) => UseManagemenMutationHookResult;
 
-const useManagementMutation = (props: UseManagementMutationProps, method: HTTPMethods) => {
+const useManagementMutation: UseManagementMutationHookMethod = (props: UseManagementMutationHookProps, method: HTTPMethods) => {
   const { key, id, onSuccess, onError } = props;
   const queryClient = useQueryClient();
   const isDeleteMethod = method === 'DELETE';
 
 
-
-  const mutationResult: UseManagementMutationResult = useMutation({
+  const mutationResult = useMutation({
     mutationFn: (args) => {
       return fetch(`/api/${key}/${id}`, {
         method,
